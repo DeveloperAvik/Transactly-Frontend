@@ -1,4 +1,4 @@
-import Logo from "../../assets/icons/logo";
+import Logo from "../../assets/icons/Logo";
 
 import { Button } from "../ui/button";
 
@@ -13,13 +13,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "../ui/popover";
+import { ModeToggle } from "./ModeToggler";
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
   { href: "#", label: "Home", active: true },
   { href: "#", label: "Features" },
   { href: "#", label: "Pricing" },
-  { href: "#", label: "About" },
+  { href: "/about", label: "About" },
 ];
 
 export default function Navbar() {
@@ -106,6 +107,7 @@ export default function Navbar() {
         </div>
         {/* Right side */}
         <div className="flex items-center gap-2">
+          <ModeToggle/>
           <Button asChild variant="ghost" size="sm" className="text-sm">
             <a href="#">Sign In</a>
           </Button>
