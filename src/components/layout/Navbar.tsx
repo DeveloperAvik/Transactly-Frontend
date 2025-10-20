@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ModeToggle } from "./ModeToggler";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [

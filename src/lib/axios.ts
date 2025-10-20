@@ -2,7 +2,8 @@ import config from "@/config";
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: config.baseUrl,
+  baseURL: config.apiUrl,
+  timeout: config.apiTimeout,
 });
 
 // Add a request interceptor

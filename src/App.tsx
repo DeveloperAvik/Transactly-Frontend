@@ -1,5 +1,5 @@
 
-import { Outlet } from 'react-router'
+import { Outlet } from 'react-router-dom'
 import './App.css'
 import CommonLayouts from './components/layout/CommonLayouts'
 

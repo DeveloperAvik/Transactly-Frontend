@@ -1,21 +1,20 @@
-import React from "react";
-import ReactDOM from "react-dom/client"; 
-import { RouterProvider } from "react-router";
-import { router } from "./routes/index";
-import { ThemeProvider } from "./providers/theme.provider";
-import { Provider as ReduxProvider } from "react-redux";
+import React from "react"
+import ReactDOM from "react-dom/client"
+import { RouterProvider } from "react-router-dom" // ✅ correct package
+import { router } from "@/routes"
+import { ThemeProvider } from "@/providers/theme.provider"
+import { Provider as ReduxProvider } from "react-redux"
+import { store } from "@/redux/store"
+import { Toaster } from "@/components/ui/sonner"
+import "@/index.css" // ✅ use alias (cleaner + works with bundler mode)
 
-import {store} from "./redux/store";
-
-import { Toaster } from "./components/ui/sonner";
-
-ReactDOM.createRoot(document.getElementById("root")!).render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ReduxProvider store={store}>
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <RouterProvider router={router} />
-        <Toaster richColors />
+        <Toaster />
       </ThemeProvider>
     </ReduxProvider>
   </React.StrictMode>
-);
+)

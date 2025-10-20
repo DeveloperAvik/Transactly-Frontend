@@ -1,13 +1,14 @@
+"use client";
+
 import { useId, useState } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-
 import { Input } from "@/components/ui/input";
 
-export default function Password({ ...field }) {
+export function PasswordInput({ ...field }) {
   const id = useId();
-  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [isVisible, setIsVisible] = useState(false);
 
-  const toggleVisibility = () => setIsVisible((prevState) => !prevState);
+  const toggleVisibility = () => setIsVisible((prev) => !prev);
 
   return (
     <div className="*:not-first:mt-2">
