@@ -9,7 +9,7 @@ export default function CommonLayouts({ children }: IProps) {
     return (
         <div>
             <Navbar/>
-            {children}
+                {children}
             <Footer/>
         </div>
     )

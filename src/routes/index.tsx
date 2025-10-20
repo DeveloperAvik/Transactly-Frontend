@@ -1,38 +1,58 @@
-import App from "../App";
-import About from "../pages/About";
-// import Analytics from "../pages/Analytics";
+import App from "@/App";
+import Home from "@/pages/Home";
+import About from "@/pages/About";
+// import FeaturesPage from "@/pages/FeaturesPage";
+// import Pricing from "@/pages/Landing/Pricing";
+// import Contact from "@/pages/Landing/Contact";
+// import FAQ from "@/pages/Landing/FAQ";
+import Login from "@/pages/Login";
+import Register from "@/pages/Register";
+import Verify from "@/pages/Verify";
+
 import { createBrowserRouter } from "react-router-dom";
-import Register from "../pages/Register";
-import Login from "../pages/Login";
 
+// ✅ Router definition (Component syntax)
 export const router = createBrowserRouter([
-    {
-        path: "/",
-        Component: App,
-        children: [
-            {
-                path: "about",
-                Component: About
-            },
-        ],
-    }, 
-
-    {
-        Component: Login,
-        path: "/login",
-    },
-    {
-        Component: Register,
-        path: "/register",
-    },
-    // {
-    //     Component: AdminLyouts,
-    //     path:"admin",
-    //     children: [
-    //         {
-    //             path:"analytics",
-    //             Component: Analytics
-    //         }
-    //     ]
-    // }
+  {
+    Component: App, // <-- this wraps your CommonLayouts (Navbar + Footer)
+    path: "/",
+    children: [
+      {
+        index: true, // default route
+        Component: Home,
+      },
+      {
+        path: "about",
+        Component: About,
+      },
+    //   {
+    //     path: "features",
+    //     Component: FeaturesPage,
+    //   },
+    //   {
+    //     path: "pricing",
+    //     Component: Pricing,
+    //   },
+    //   {
+    //     path: "contact",
+    //     Component: Contact,
+    //   },
+    //   {
+    //     path: "faq",
+    //     Component: FAQ,
+    //   },
+    ],
+  },
+  {
+    path: "/login",
+    Component: Login,
+  },
+  {
+    path: "/register",
+    Component: Register,
+  },
+  {
+    path: "/verify",
+    Component: Verify,
+  },
 ]);
