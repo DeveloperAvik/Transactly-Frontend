@@ -1,6 +1,6 @@
 import App from "../App";
 import About from "../pages/About";
-import Analytics from "../pages/Analytics";
+// import Analytics from "../pages/Analytics";
 import { createBrowserRouter } from "react-router-dom";
 import Register from "../pages/Register";
 import Login from "../pages/Login";
