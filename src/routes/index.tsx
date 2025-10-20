@@ -1,7 +1,7 @@
 import App from "@/App";
 import Home from "@/pages/Home";
 import About from "@/pages/About";
-// import FeaturesPage from "@/pages/FeaturesPage";
+import FeaturesPage from "@/pages/FeaturesPage";
 // import Pricing from "@/pages/Landing/Pricing";
 // import Contact from "@/pages/Landing/Contact";
 // import FAQ from "@/pages/Landing/FAQ";
@@ -25,10 +25,10 @@ export const router = createBrowserRouter([
         path: "about",
         Component: About,
       },
-    //   {
-    //     path: "features",
-    //     Component: FeaturesPage,
-    //   },
+      {
+        path: "features",
+        Component: FeaturesPage,
+      },
     //   {
     //     path: "pricing",
     //     Component: Pricing,
