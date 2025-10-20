@@ -16,7 +16,7 @@ import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form"
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 
-// ✅ Define typed default values for the form
+
 interface LoginFormValues extends FieldValues {
   email: string
   password: string
@@ -29,7 +29,7 @@ export function LoginForm({
   const navigate = useNavigate()
   const [login] = useLoginMutation()
 
-  // ✅ Initialize the form properly with default values
+
   const form = useForm<LoginFormValues>({
     defaultValues: {
       email: "",
