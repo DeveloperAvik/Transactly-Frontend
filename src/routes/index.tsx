@@ -3,7 +3,7 @@ import Home from "@/pages/Home";
 import About from "@/pages/About";
 import FeaturesPage from "@/pages/FeaturesPage";
 import Pricing from "@/pages/Pricing";
-// import Contact from "@/pages/Landing/Contact";
+import Contact from "@/pages/Contact";
 // import FAQ from "@/pages/Landing/FAQ";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
@@ -13,11 +13,11 @@ import { createBrowserRouter } from "react-router-dom";
 
 export const router = createBrowserRouter([
   {
-    Component: App, // <-- this wraps your CommonLayouts (Navbar + Footer)
+    Component: App, 
     path: "/",
     children: [
       {
-        index: true, // default route
+        index: true,
         Component: Home,
       },
       {
@@ -32,10 +32,10 @@ export const router = createBrowserRouter([
         path: "pricing",
         Component: Pricing,
       },
-    //   {
-    //     path: "contact",
-    //     Component: Contact,
-    //   },
+      {
+        path: "contact",
+        Component: Contact,
+      },
     //   {
     //     path: "faq",
     //     Component: FAQ,
