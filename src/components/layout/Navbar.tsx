@@ -15,13 +15,14 @@ import { ModeToggle } from "./ModeToggler";
 import { Link } from "react-router-dom";
 import { Menu } from "lucide-react";
 
-// Navigation links array
+
 const navigationLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/features", label: "Features" },
   { href: "/pricing", label: "Pricing" },
   { href: "/contact", label: "Contact" },
+  { href: "/faq", label: "FaQ" }
 ];
 
 export default function Navbar() {

@@ -4,7 +4,7 @@ import About from "@/pages/About";
 import FeaturesPage from "@/pages/FeaturesPage";
 import Pricing from "@/pages/Pricing";
 import Contact from "@/pages/Contact";
-// import FAQ from "@/pages/Landing/FAQ";
+import FAQ from "@/pages/FAQ";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Verify from "@/pages/Verify";
@@ -36,10 +36,10 @@ export const router = createBrowserRouter([
         path: "contact",
         Component: Contact,
       },
-    //   {
-    //     path: "faq",
-    //     Component: FAQ,
-    //   },
+      {
+        path: "faq",
+        Component: FAQ,
+      },
     ],
   },
   {
