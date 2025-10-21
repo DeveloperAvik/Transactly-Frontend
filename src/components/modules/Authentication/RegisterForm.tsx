@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,35 +14,38 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PasswordInput } from "@/components/ui/Password"; 
+import Password from "@/components/ui/Password";
+import { useRegisterMutation } from "@/redux/features/auth/auth.api";
 import { toast } from "sonner";
 
-
-// ✅ Validation schema
+// ✅ Schema validation
 const registerSchema = z
   .object({
     name: z
       .string()
-      .min(3, { message: "Name is too short" })
-      .max(50, { message: "Name is too long" }),
-    email: z.string().email({ message: "Invalid email address" }),
-    password: z.string().min(8, { message: "Password must be at least 8 characters" }),
-    confirmPassword: z.string().min(8, { message: "Confirm Password is too short" }),
+      .min(3, { message: "Name must be at least 3 characters" })
+      .max(50),
+    email: z.string().email({ message: "Enter a valid email" }),
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters" }),
+    confirmPassword: z
+      .string()
+      .min(8, { message: "Confirm Password must be at least 8 characters" }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
 
-type RegisterFormValues = z.infer<typeof registerSchema>;
-
 export function RegisterForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
+  const [registerUser, { isLoading }] = useRegisterMutation(); // renamed `register` → `registerUser` to avoid name clash
   const navigate = useNavigate();
 
-  const form = useForm<RegisterFormValues>({
+  const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
@@ -54,7 +55,8 @@ export function RegisterForm({
     },
   });
 
-  const onSubmit = async (data: RegisterFormValues) => {
+  // ✅ Submit handler
+  const onSubmit = async (data: z.infer<typeof registerSchema>) => {
     const userInfo = {
       name: data.name,
       email: data.email,
@@ -62,15 +64,14 @@ export function RegisterForm({
     };
 
     try {
-      // 🔧 Placeholder for backend API call
-      // const result = await register(userInfo).unwrap();
-      // console.log(result);
+      const result = await registerUser(userInfo).unwrap();
+      console.log(result);
 
-      toast.success("User created successfully 🎉");
+      toast.success("Account created successfully! Please verify your email.");
       navigate("/verify");
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong. Please try again.");
+    } catch (error: any) {
+      console.error("Register error:", error);
+      toast.error(error?.data?.message || "Registration failed");
     }
   };
 
@@ -84,7 +85,7 @@ export function RegisterForm({
         </p>
       </div>
 
-      {/* Form */}
+      {/* Form Section */}
       <div className="grid gap-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -96,10 +97,14 @@ export function RegisterForm({
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" {...field} />
+                    <Input
+                      placeholder="John Doe"
+                      {...field}
+                      value={field.value || ""}
+                    />
                   </FormControl>
                   <FormDescription className="sr-only">
-                    This is your full name.
+                    Your full name for account identification
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -115,13 +120,14 @@ export function RegisterForm({
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="john.doe@example.com"
                       type="email"
+                      placeholder="john.doe@company.com"
                       {...field}
+                      value={field.value || ""}
                     />
                   </FormControl>
                   <FormDescription className="sr-only">
-                    We’ll never share your email.
+                    This email will be used for verification
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -136,10 +142,10 @@ export function RegisterForm({
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <PasswordInput placeholder="••••••••" {...field} />
+                    <Password {...field} value={field.value || ""} />
                   </FormControl>
                   <FormDescription className="sr-only">
-                    Choose a secure password.
+                    Choose a strong password
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -154,19 +160,18 @@ export function RegisterForm({
                 <FormItem>
                   <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
-                    <PasswordInput placeholder="••••••••" {...field} />
+                    <Password {...field} value={field.value || ""} />
                   </FormControl>
                   <FormDescription className="sr-only">
-                    Re-enter your password.
+                    Must match your password
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Submit */}
-            <Button type="submit" className="w-full">
-              Register
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Creating account..." : "Submit"}
             </Button>
           </form>
         </Form>
@@ -178,7 +183,7 @@ export function RegisterForm({
           </span>
         </div>
 
-        {/* Google login */}
+        {/* Google Login */}
         <Button
           type="button"
           variant="outline"

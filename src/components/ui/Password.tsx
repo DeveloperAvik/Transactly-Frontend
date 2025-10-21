@@ -4,7 +4,7 @@ import * as React from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
-export const PasswordInput = React.forwardRef<
+const Password = React.forwardRef<
   HTMLInputElement,
   React.InputHTMLAttributes<HTMLInputElement>
 >(({ className, ...props }, ref) => {
@@ -37,4 +37,6 @@ export const PasswordInput = React.forwardRef<
   );
 });
 
-PasswordInput.displayName = "PasswordInput";
+Password.displayName = "Password";
+
+export default Password;

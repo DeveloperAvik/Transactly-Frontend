@@ -1,6 +1,4 @@
-"use client"
-
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -8,61 +6,66 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
-import { useLoginMutation } from "@/redux/features/auth/auth.api"
-import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form"
-import { Link, useNavigate } from "react-router-dom"
-import { toast } from "sonner"
-
-
-interface LoginFormValues extends FieldValues {
-  email: string
-  password: string
-}
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import config from "@/config";
+import { cn } from "@/lib/utils";
+import { useLoginMutation } from "@/redux/features/auth/auth.api";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export function LoginForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  const navigate = useNavigate()
-  const [login] = useLoginMutation()
-
-
-  const form = useForm<LoginFormValues>({
+  const navigate = useNavigate();
+  const form = useForm({
+    //! For development only
     defaultValues: {
-      email: "",
-      password: "",
+      email: "mirhussainmurtaza@gmail.com",
+      password: "12345678",
     },
-  })
+  });
 
-  const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
+  const [login, { isLoading }] = useLoginMutation();
+
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
-      const res = await login(data).unwrap()
-      console.log("Login Success:", res)
-      toast.success("Login successful!")
-    } catch (err: any) {
-      console.error("Login error:", err)
+      const res = await login(data).unwrap();
 
-      if (err?.status === 401) {
-        toast.error("Your account is not verified")
-        navigate("/verify", { state: data.email })
+      if (res?.success) {
+        toast.success("Logged in successfully");
+        navigate("/");
+      }
+    } catch (err: any) {
+      console.error("Login Error:", err);
+
+      // ✅ Safely access backend messages
+      const message = err?.data?.message || "Login failed. Please try again.";
+
+      if (message === "Password does not match") {
+        toast.error("Invalid credentials");
+      } else if (message === "User is not verified") {
+        toast.error("Your account is not verified");
+        navigate("/verify", { state: data.email });
       } else {
-        toast.error("Login failed. Please check your credentials.")
+        toast.error(message);
       }
     }
-  }
+  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
+      {/* Header */}
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Login to your account</h1>
         <p className="text-balance text-sm text-muted-foreground">
-          Enter your email below to log in to your account
+          Enter your email below to login to your account
         </p>
       </div>
 
+      {/* Form */}
       <div className="grid gap-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -70,14 +73,14 @@ export function LoginForm({
             <FormField
               control={form.control}
               name="email"
-              render={({ field }: { field: any }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
-                      type="email"
                       placeholder="john@example.com"
                       {...field}
+                      value={field.value || ""}
                     />
                   </FormControl>
                   <FormMessage />
@@ -89,14 +92,15 @@ export function LoginForm({
             <FormField
               control={form.control}
               name="password"
-              render={({ field }: { field: any }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="••••••••"
+                      placeholder="********"
                       {...field}
+                      value={field.value || ""}
                     />
                   </FormControl>
                   <FormMessage />
@@ -104,8 +108,8 @@ export function LoginForm({
               )}
             />
 
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Logging in..." : "Login"}
             </Button>
           </form>
         </Form>
@@ -117,12 +121,14 @@ export function LoginForm({
           </span>
         </div>
 
-        {/* Google Login */}
+        {/* Google Auth */}
         <Button
+          onClick={() =>
+            window.open(`${config.baseURL}/auth/google`, "_self")
+          }
           type="button"
           variant="outline"
           className="w-full cursor-pointer"
-          onClick={() => toast.info("Google login not yet implemented")}
         >
           Login with Google
         </Button>
@@ -136,5 +142,5 @@ export function LoginForm({
         </Link>
       </div>
     </div>
-  )
+  );
 }
