@@ -14,18 +14,37 @@ import {
 import { ModeToggle } from "./ModeToggler";
 import { Link } from "react-router-dom";
 import { Menu } from "lucide-react";
+import {
+  authApi,
+  useLogoutMutation,
+  useUserInfoQuery,
+} from "@/redux/features/auth/auth.api";
+import { useAppDispatch } from "@/redux/hook";
 
-
+// Navigation links
 const navigationLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/features", label: "Features" },
   { href: "/pricing", label: "Pricing" },
   { href: "/contact", label: "Contact" },
-  { href: "/faq", label: "FaQ" }
+  { href: "/faq", label: "FAQ" },
 ];
 
 export default function Navbar() {
+  const { data } = useUserInfoQuery(undefined); // Fetch user info
+  const [logout] = useLogoutMutation();
+  const dispatch = useAppDispatch();
+
+  const handleLogout = async () => {
+    try {
+      await logout(undefined);
+      dispatch(authApi.util.resetApiState());
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
+
   return (
     <header className="border-b bg-background text-foreground sticky top-0 z-50">
       <div className="container mx-auto px-4 flex h-16 items-center justify-between gap-4">
@@ -89,9 +108,21 @@ export default function Navbar() {
         {/* Right section */}
         <div className="flex items-center gap-2">
           <ModeToggle />
-          <Button asChild variant="default" className="text-sm">
-            <Link to="/login">Login</Link>
-          </Button>
+
+          {/* 👇 Auth Logic Added */}
+          {data?.data?.email ? (
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              className="text-sm"
+            >
+              Logout
+            </Button>
+          ) : (
+            <Button asChild variant="default" className="text-sm">
+              <Link to="/login">Login</Link>
+            </Button>
+          )}
         </div>
       </div>
     </header>
