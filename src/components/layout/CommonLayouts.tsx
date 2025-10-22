@@ -6,11 +6,11 @@ import Navbar from "./Navbar"
 interface IProps { children: ReactNode }
 
 export default function CommonLayouts({ children }: IProps) {
-    return (
-        <div>
-            <Navbar/>
-                {children}
-            <Footer/>
-        </div>
-    )
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <main className="flex-grow">{children}</main>
+      <Footer />
+    </div>
+  );
 }
