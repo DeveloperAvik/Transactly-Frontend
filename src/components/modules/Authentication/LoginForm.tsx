@@ -124,7 +124,7 @@ export function LoginForm({
         {/* Google Auth */}
         <Button
           onClick={() =>
-            window.open(`${config.baseURL}/auth/google`, "_self")
+            window.open(`${config.apiUrl}/auth/google`, "_self")
           }
           type="button"
           variant="outline"

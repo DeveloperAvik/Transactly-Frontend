@@ -9,23 +9,26 @@ import FAQ from "@/pages/FAQ";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Verify from "@/pages/Verify";
+
 import ProtectedRoute from "@/routes/ProtectedRoute";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 
-// ✅ Dashboard Pages (import when created)
+// dashboards & pages (created above)
 import UserDashboard from "@/pages/Users/Dashboard";
-import AdminDashboard from "@/pages/admin/Dashboard";
-import AgentDashboard from "@/pages/agent/Dashboard";
+import SendMoney from "@/pages/Users/SendMoney";
+import Deposit from "@/pages/Users/Deposit";
+import Withdraw from "@/pages/Users/Withdraw";
+import TransactionsPage from "@/pages/Users/Transactions";
 
-// Optional future pages
-// import SendMoney from "@/pages/Users/SendMoney";
-// import Withdraw from "@/pages/Users/Withdraw";
-// import Transactions from "@/pages/Users/Transactions";
+import AgentDashboard from "@/pages/agent/Dashboard";
+import CashIn from "@/pages/agent/CashIn";
+import CashOut from "@/pages/agent/CashOut";
+
+import AdminDashboard from "@/pages/admin/Dashboard";
 
 import { createBrowserRouter } from "react-router-dom";
 
 export const router = createBrowserRouter([
-  // 🌐 Public routes
   {
     Component: App,
     path: "/",
@@ -39,38 +42,40 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // 🔐 Authentication routes
   { path: "/login", Component: Login },
   { path: "/register", Component: Register },
   { path: "/verify", Component: Verify },
 
-  // 🧭 Protected Dashboard Routes
+  // Dashboard protected area
   {
     path: "/dashboard",
-    element: <ProtectedRoute />, // role/auth guard
+    element: <ProtectedRoute />,
     children: [
       {
-        element: <DashboardLayout />, // sidebar + topbar layout
+        element: <DashboardLayout />,
         children: [
-          // USER
+          // User routes
           { path: "user", element: <UserDashboard /> },
+          { path: "user/send", element: <SendMoney /> },
+          { path: "user/deposit", element: <Deposit /> },
+          { path: "user/withdraw", element: <Withdraw /> },
+          { path: "user/transactions", element: <TransactionsPage /> },
 
-          // AGENT
+          // Agent routes
           { path: "agent", element: <AgentDashboard /> },
+          { path: "agent/cashin", element: <CashIn /> },
+          { path: "agent/cashout", element: <CashOut /> },
+          { path: "agent/transactions", element: <TransactionsPage /> },
 
-          // ADMIN
+          // Admin routes
           { path: "admin", element: <AdminDashboard /> },
-
-          // Optionally, add nested role routes here later
-          // { path: "user/send", element: <SendMoney /> },
-          // { path: "user/withdraw", element: <Withdraw /> },
-          // { path: "user/transactions", element: <Transactions /> },
+          { path: "admin/transactions", element: <TransactionsPage /> },
         ],
       },
     ],
   },
 
-  // 🚧 404 fallback
+  // 404 fallback
   {
     path: "*",
     element: (
@@ -79,12 +84,7 @@ export const router = createBrowserRouter([
         <p className="text-muted-foreground mb-4">
           The page you’re looking for doesn’t exist.
         </p>
-        <a
-          href="/"
-          className="text-primary underline hover:text-primary/80 transition"
-        >
-          Go back to Home
-        </a>
+        <a href="/" className="text-primary underline">Go back to Home</a>
       </div>
     ),
   },
