@@ -1,27 +1,52 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
 
 export default function UserDashboard() {
+  const { data } = useUserInfoQuery(undefined);
+  const user = data?.data;
+
+  const balance = user?.wallet?.balance ?? 0;
+
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Wallet Overview</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold">User Dashboard</h1>
+
+      <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle>Wallet Balance</CardTitle>
           </CardHeader>
-          <CardContent>₹12,500</CardContent>
+          <CardContent>
+            <div className="text-2xl font-semibold">
+              {balance.toLocaleString("en-IN", { style: "currency", currency: "INR" })}
+            </div>
+          </CardContent>
         </Card>
+
         <Card>
           <CardHeader>
-            <CardTitle>Last Transaction</CardTitle>
+            <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
-          <CardContent>Sent ₹500 to Rahul</CardContent>
+          <CardContent>
+            <div className="flex flex-col gap-2">
+              <a className="text-sm text-primary" href="/dashboard/user/send">Send Money</a>
+              <a className="text-sm text-primary" href="/dashboard/user/deposit">Deposit</a>
+              <a className="text-sm text-primary" href="/dashboard/user/withdraw">Withdraw</a>
+            </div>
+          </CardContent>
         </Card>
+
         <Card>
           <CardHeader>
-            <CardTitle>Status</CardTitle>
+            <CardTitle>Profile</CardTitle>
           </CardHeader>
-          <CardContent>Active</CardContent>
+          <CardContent>
+            <div className="text-sm">
+              <div>{user?.name}</div>
+              <div className="text-muted-foreground">{user?.email}</div>
+            </div>
+          </CardContent>
         </Card>
       </div>
     </div>

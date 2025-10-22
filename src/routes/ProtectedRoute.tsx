@@ -1,15 +1,23 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
 
+
 export default function ProtectedRoute() {
-  const { data, isLoading } = useUserInfoQuery(undefined);
+  const { data, isLoading, isError } = useUserInfoQuery(undefined);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="h-screen grid place-items-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
 
-  const role = data?.data?.role;
   const isAuthenticated = !!data?.data?.email;
 
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (isError || !isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
-  return <Outlet context={{ role }} />;
+  return <Outlet />;
 }
