@@ -10,7 +10,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -27,176 +26,136 @@ import {
   useVerifyOtpMutation,
 } from "@/redux/features/auth/auth.api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Dot } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import z from "zod";
 
 const FormSchema = z.object({
-  pin: z.string().min(6, {
-    message: "Your one-time password must be 6 characters.",
-  }),
+  pin: z.string().min(6, { message: "OTP must be 6 digits" }),
 });
 
 export default function Verify() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [email] = useState(location.state);
+
+  // Retrieve email from navigation state
+  const email = location.state?.email;
   const [confirmed, setConfirmed] = useState(false);
+  const [timer, setTimer] = useState(0);
+
   const [sendOtp] = useSendOtpMutation();
   const [verifyOtp] = useVerifyOtpMutation();
-  const [timer, setTimer] = useState(5);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      pin: "",
-    },
+    defaultValues: { pin: "" },
   });
 
+  // Auto send OTP when email exists
+  useEffect(() => {
+    if (email) {
+      handleSendOtp();
+    } else {
+      navigate("/register");
+    }
+  }, [email]);
+
   const handleSendOtp = async () => {
-    const toastId = toast.loading("Sending OTP");
-
+    const toastId = toast.loading("Sending OTP...");
     try {
-      const res = await sendOtp({ email: email }).unwrap();
-
+      const res = await sendOtp({ email }).unwrap();
       if (res.success) {
-        toast.success("OTP Sent", { id: toastId });
+        toast.success("OTP sent successfully", { id: toastId });
         setConfirmed(true);
-        setTimer(5);
+        setTimer(60);
       }
-    } catch (err) {
-      console.log(err);
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Failed to send OTP", { id: toastId });
     }
   };
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    const toastId = toast.loading("Verifying OTP");
-    const userInfo = {
-      email,
-      otp: data.pin,
-    };
-
+    const toastId = toast.loading("Verifying OTP...");
     try {
-      const res = await verifyOtp(userInfo).unwrap();
+      const res = await verifyOtp({ email, otp: data.pin }).unwrap();
       if (res.success) {
-        toast.success("OTP Verified", { id: toastId });
-        setConfirmed(true);
+        toast.success("Email verified successfully!", { id: toastId });
+        navigate("/dashboard/user"); // ✅ redirect after success
       }
-    } catch (err) {
-      console.log(err);
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Invalid OTP", { id: toastId });
     }
   };
 
-  //! Needed - Turned off for development
-  //   useEffect(() => {
-  //     if (!email) {
-  //       navigate("/");
-  //     }
-  //   }, [email]);
-
+  // Countdown timer for resend
   useEffect(() => {
-    if (!email || !confirmed) {
-      return;
-    }
-
-    const timerId = setInterval(() => {
-      setTimer((prev) => (prev > 0 ? prev - 1 : 0));
-      console.log("Tick");
-    }, 1000);
-
-    return () => clearInterval(timerId);
-  }, [email, confirmed]);
+    if (timer <= 0) return;
+    const id = setInterval(() => setTimer((t) => t - 1), 1000);
+    return () => clearInterval(id);
+  }, [timer]);
 
   return (
     <div className="grid place-content-center h-screen">
       {confirmed ? (
         <Card>
           <CardHeader>
-            <CardTitle className="text-xl">Verify your email address</CardTitle>
+            <CardTitle className="text-xl">Verify your email</CardTitle>
             <CardDescription>
-              Please enter the 6-digit code we sent to <br /> {email}
+              Enter the 6-digit OTP sent to <b>{email}</b>
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form
-                id="otp-form"
-                onSubmit={form.handleSubmit(onSubmit)}
-                className=" space-y-6"
-              >
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
                   control={form.control}
                   name="pin"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>One-Time Password</FormLabel>
+                      <FormLabel>OTP</FormLabel>
                       <FormControl>
                         <InputOTP maxLength={6} {...field}>
-                          <InputOTPGroup>
-                            <InputOTPSlot index={0} />
-                          </InputOTPGroup>
-                          <InputOTPGroup>
-                            <InputOTPSlot index={1} />
-                          </InputOTPGroup>
-                          <InputOTPGroup>
-                            <InputOTPSlot index={2} />
-                          </InputOTPGroup>
-                          <Dot />
-                          <InputOTPGroup>
-                            <InputOTPSlot index={3} />
-                          </InputOTPGroup>
-                          <InputOTPGroup>
-                            <InputOTPSlot index={4} />
-                          </InputOTPGroup>
-                          <InputOTPGroup>
-                            <InputOTPSlot index={5} />
-                          </InputOTPGroup>
+                          {[...Array(6)].map((_, i) => (
+                            <InputOTPGroup key={i}>
+                              <InputOTPSlot index={i} />
+                            </InputOTPGroup>
+                          ))}
                         </InputOTP>
                       </FormControl>
-                      <FormDescription>
-                        <Button
-                          onClick={handleSendOtp}
-                          type="button"
-                          variant="link"
-                          disabled={timer !== 0}
-                          className={cn("p-0 m-0", {
-                            "cursor-pointer": timer === 0,
-                            "text-gray-500": timer !== 0,
-                          })}
-                        >
-                          Resent OPT:{" "}
-                        </Button>{" "}
-                        {timer}
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+                <Button type="submit" className="w-full">
+                  Verify
+                </Button>
               </form>
             </Form>
+            <div className="text-sm mt-4 text-center">
+              Didn’t get OTP?{" "}
+              <button
+                onClick={handleSendOtp}
+                className={cn(
+                  "text-primary font-semibold hover:underline disabled:text-gray-400",
+                  timer > 0 && "pointer-events-none"
+                )}
+                disabled={timer > 0}
+              >
+                Resend OTP {timer > 0 && `(${timer}s)`}
+              </button>
+            </div>
           </CardContent>
-          <CardFooter className="flex justify-end">
-            <Button form="otp-form" type="submit">
-              Submit
-            </Button>
-          </CardFooter>
         </Card>
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle className="text-xl">Verify your email address</CardTitle>
+            <CardTitle className="text-xl">Verify your email</CardTitle>
             <CardDescription>
-              We will send you an OTP at <br /> {email}
+              Sending OTP to <b>{email}</b>...
             </CardDescription>
           </CardHeader>
-          <CardFooter className="flex justify-end">
-            <Button onClick={handleSendOtp} className="w-[300px]">
-              Confirm
-            </Button>
-          </CardFooter>
         </Card>
       )}
     </div>

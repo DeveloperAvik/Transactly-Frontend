@@ -2,11 +2,24 @@
 import { baseApi } from "@/redux/baseApi";
 import { ITransaction, ITransactionRequest } from "@/types/transaction.type";
 
+/**
+ * Backend routes use /transaction (singular) in your backend.
+ * Align frontend paths to backend endpoints:
+ *  - GET /api/v1/transaction/          -> list all
+ *  - POST /api/v1/transaction/deposit -> deposit
+ *  - POST /api/v1/transaction/withdraw -> withdraw
+ *  - POST /api/v1/transaction/transfer -> transfer/send
+ *
+ * Agent endpoints in backend may vary; these endpoints attempt conventional paths:
+ *  - POST /api/v1/agent/cashin
+ *  - POST /api/v1/agent/cashout
+ */
+
 export const transactionApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getTransactions: builder.query<ITransaction[], { page?: number; limit?: number } | void>({
       query: (params) => ({
-        url: "/transactions",
+        url: "/transaction",
         method: "GET",
         params,
       }),
@@ -14,7 +27,7 @@ export const transactionApi = baseApi.injectEndpoints({
     }),
     sendMoney: builder.mutation({
       query: (payload: ITransactionRequest) => ({
-        url: "/transactions/send",
+        url: "/transaction/transfer",
         method: "POST",
         data: payload,
       }),
@@ -22,7 +35,7 @@ export const transactionApi = baseApi.injectEndpoints({
     }),
     deposit: builder.mutation({
       query: (payload: ITransactionRequest) => ({
-        url: "/transactions/deposit",
+        url: "/transaction/deposit",
         method: "POST",
         data: payload,
       }),
@@ -30,13 +43,13 @@ export const transactionApi = baseApi.injectEndpoints({
     }),
     withdraw: builder.mutation({
       query: (payload: ITransactionRequest) => ({
-        url: "/transactions/withdraw",
+        url: "/transaction/withdraw",
         method: "POST",
         data: payload,
       }),
       invalidatesTags: ["TRANSACTION", "USER"],
     }),
-    // Agent actions
+    // Agent actions (match backend agent routes)
     cashIn: builder.mutation({
       query: (payload: ITransactionRequest) => ({
         url: "/agent/cashin",

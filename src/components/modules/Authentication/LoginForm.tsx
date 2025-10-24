@@ -21,10 +21,9 @@ export function LoginForm({
 }: React.HTMLAttributes<HTMLDivElement>) {
   const navigate = useNavigate();
   const form = useForm({
-    //! For development only
     defaultValues: {
-      email: "gajakhor@gmail.com",
-      password: "12345678",
+      email: "developeravikdas@gmail.com",
+      password: "Secure@123",
     },
   });
 
@@ -35,13 +34,25 @@ export function LoginForm({
       const res = await login(data).unwrap();
 
       if (res?.success) {
+        // ✅ Handle 2-Step Verification
+        if (res?.data?.twoStep) {
+          toast.info("OTP sent to your email. Please verify to continue.");
+          navigate("/verify", {
+            state: {
+              userId: res.data.userId,
+              email: data.email,
+            },
+          });
+          return;
+        }
+
+        // ✅ Normal login
         toast.success("Logged in successfully");
         navigate("/");
       }
     } catch (err: any) {
       console.error("Login Error:", err);
 
-      // ✅ Safely access backend messages
       const message = err?.data?.message || "Login failed. Please try again.";
 
       if (message === "Password does not match") {
@@ -69,7 +80,6 @@ export function LoginForm({
       <div className="grid gap-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Email Field */}
             <FormField
               control={form.control}
               name="email"
@@ -88,7 +98,6 @@ export function LoginForm({
               )}
             />
 
-            {/* Password Field */}
             <FormField
               control={form.control}
               name="password"
@@ -123,9 +132,7 @@ export function LoginForm({
 
         {/* Google Auth */}
         <Button
-          onClick={() =>
-            window.open(`${config.apiUrl}/auth/google`, "_self")
-          }
+          onClick={() => window.open(`${config.apiUrl}/auth/google`, "_self")}
           type="button"
           variant="outline"
           className="w-full cursor-pointer"
