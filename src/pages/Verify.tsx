@@ -3,7 +3,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -40,7 +39,6 @@ export default function Verify() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Retrieve email from navigation state
   const email = location.state?.email;
   const [confirmed, setConfirmed] = useState(false);
   const [timer, setTimer] = useState(0);
@@ -53,7 +51,6 @@ export default function Verify() {
     defaultValues: { pin: "" },
   });
 
-  // Auto send OTP when email exists
   useEffect(() => {
     if (email) {
       handleSendOtp();
@@ -82,14 +79,13 @@ export default function Verify() {
       const res = await verifyOtp({ email, otp: data.pin }).unwrap();
       if (res.success) {
         toast.success("Email verified successfully!", { id: toastId });
-        navigate("/dashboard/user"); // ✅ redirect after success
+        navigate("/dashboard/user");
       }
     } catch (err: any) {
       toast.error(err?.data?.message || "Invalid OTP", { id: toastId });
     }
   };
 
-  // Countdown timer for resend
   useEffect(() => {
     if (timer <= 0) return;
     const id = setInterval(() => setTimer((t) => t - 1), 1000);

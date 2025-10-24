@@ -11,7 +11,8 @@ import { Input } from "@/components/ui/input";
 import config from "@/config";
 import { cn } from "@/lib/utils";
 import { useLoginMutation } from "@/redux/features/auth/auth.api";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { ILogin } from "@/types";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -20,7 +21,7 @@ export function LoginForm({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   const navigate = useNavigate();
-  const form = useForm({
+  const form = useForm<ILogin>({
     defaultValues: {
       email: "developeravikdas@gmail.com",
       password: "Secure@123",
@@ -29,24 +30,11 @@ export function LoginForm({
 
   const [login, { isLoading }] = useLoginMutation();
 
-  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+  const onSubmit: SubmitHandler<ILogin> = async (data) => {
     try {
       const res = await login(data).unwrap();
 
       if (res?.success) {
-        // ✅ Handle 2-Step Verification
-        if (res?.data?.twoStep) {
-          toast.info("OTP sent to your email. Please verify to continue.");
-          navigate("/verify", {
-            state: {
-              userId: res.data.userId,
-              email: data.email,
-            },
-          });
-          return;
-        }
-
-        // ✅ Normal login
         toast.success("Logged in successfully");
         navigate("/");
       }
@@ -59,7 +47,7 @@ export function LoginForm({
         toast.error("Invalid credentials");
       } else if (message === "User is not verified") {
         toast.error("Your account is not verified");
-        navigate("/verify", { state: data.email });
+        navigate("/verify", { state: { email: data.email } });
       } else {
         toast.error(message);
       }
@@ -68,7 +56,6 @@ export function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      {/* Header */}
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Login to your account</h1>
         <p className="text-balance text-sm text-muted-foreground">
@@ -76,7 +63,6 @@ export function LoginForm({
         </p>
       </div>
 
-      {/* Form */}
       <div className="grid gap-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -123,16 +109,16 @@ export function LoginForm({
           </form>
         </Form>
 
-        {/* Divider */}
         <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
           <span className="relative z-10 bg-background px-2 text-muted-foreground">
             Or continue with
           </span>
         </div>
 
-        {/* Google Auth */}
         <Button
-          onClick={() => window.open(`${config.apiUrl}/auth/google`, "_self")}
+          onClick={() =>
+            window.open(`${config.apiUrl}/auth/google`, "_self")
+          }
           type="button"
           variant="outline"
           className="w-full cursor-pointer"
@@ -141,7 +127,6 @@ export function LoginForm({
         </Button>
       </div>
 
-      {/* Footer */}
       <div className="text-center text-sm">
         Don&apos;t have an account?{" "}
         <Link to="/register" replace className="underline underline-offset-4">
