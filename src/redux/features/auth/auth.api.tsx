@@ -1,4 +1,3 @@
-// src/redux/features/auth/auth.api.ts
 import { baseApi } from "@/redux/baseApi";
 import { IResponse, ISendOtp, IVerifyOtp, ILogin } from "@/types";
 
@@ -40,17 +39,13 @@ export const authApi = baseApi.injectEndpoints({
         data: userInfo,
       }),
     }),
-    // userInfo: try /user/me first; backend may implement it as /user/me or /auth/me.
     userInfo: builder.query<any, void>({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
-        // try primary endpoint
-        const tryEndpoints = ["/user/me", "/auth/me", "/user/profile", "/user"];
+        const tryEndpoints = ["/auth/me", "/user/me", "/user/profile"];
+
         for (const url of tryEndpoints) {
-          // fetchWithBQ expects an object like { url, method }
-          // eslint-disable-next-line no-await-in-loop
           const res: any = await fetchWithBQ({ url, method: "GET" } as any);
           if ((res as any).error) {
-            // continue to next
             continue;
           } else {
             return { data: (res as any).data };
