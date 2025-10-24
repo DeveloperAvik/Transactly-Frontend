@@ -42,7 +42,6 @@ export const authApi = baseApi.injectEndpoints({
     userInfo: builder.query<any, void>({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
         const tryEndpoints = ["/auth/me", "/user/me", "/user/profile"];
-
         for (const url of tryEndpoints) {
           const res: any = await fetchWithBQ({ url, method: "GET" } as any);
           if ((res as any).error) {
