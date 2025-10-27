@@ -2,30 +2,26 @@
 import config from "@/config";
 import axios from "axios";
 
-export const axiosInstance = axios.create({
-  baseURL: config.apiUrl,
-  timeout: config.apiTimeout,
-  withCredentials: true, // send cookies for auth flows
+const axiosInstance = axios.create({
+  baseURL: config.apiUrl, 
+  timeout: config.apiTimeout || 10000,
+  withCredentials: true, 
 });
 
-// Request interceptor (lightweight)
+// Request interceptor
 axiosInstance.interceptors.request.use(
-  (cfg) => {
-    // you can attach auth headers here if you store tokens in memory
-    return cfg;
-  },
+  (cfg) => cfg,
   (err) => Promise.reject(err)
 );
 
-// Response interceptor: normalize errors to a consistent shape
+// Response interceptor
 axiosInstance.interceptors.response.use(
   (res) => res,
   (error) => {
-    if (error?.response) {
-      // prefer backend payload if available
-      return Promise.reject(error.response);
+    if (error?.response?.status === 401) {
+      console.warn("Unauthorized – user might be logged out.");
     }
-    return Promise.reject(error);
+    return Promise.reject(error.response || error);
   }
 );
 

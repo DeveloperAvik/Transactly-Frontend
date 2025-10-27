@@ -28,6 +28,7 @@ import CashOut from "@/pages/agent/CashOut";
 import AdminDashboard from "@/pages/admin/Dashboard";
 
 import { createBrowserRouter } from "react-router-dom";
+import GoogleCallback from "@/pages/GoogleCallbackHandler";
 
 /**
  * ⚙️ Application Router Configuration
@@ -55,6 +56,8 @@ export const router = createBrowserRouter([
   { path: "/login", Component: Login },
   { path: "/register", Component: Register },
   { path: "/verify", Component: Verify },
+  { path: "/google/callback", element: <GoogleCallback /> },
+
 
   // 🧭 Protected Dashboard Routes
   {
